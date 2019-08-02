@@ -8,7 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import json.cn.myhttp.HttpUrlConnectionUtil;
+import json.cn.myhttp.ICallBack;
 import json.cn.myhttp.Request;
+import json.cn.myhttp.RequestTask;
 
 /**
  * Created by wangkang on 2019/8/2.
@@ -27,7 +29,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
              //   testGet();
-                testPost();
+             //   testPost();
+                testGetOnSubThread();
             }
         });
     }
@@ -69,6 +72,25 @@ public class MainActivity extends Activity {
                 Log.d("result",response);
             }
         }).start();
+    }
+
+    public static void testGetOnSubThread(){
+
+        String url = "http://api.stay4it.com/v1/public/core/?service=user.getAll";
+        Request request = new Request(url);
+        RequestTask requestTask = new RequestTask(request);
+        requestTask.setCallBack(new ICallBack() {
+            @Override
+            public void onSuccess(String response) {
+                Log.d("result",response);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.d("result",e.toString());
+            }
+        });
+        requestTask.execute();
     }
 
 }

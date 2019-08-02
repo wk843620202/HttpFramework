@@ -15,7 +15,6 @@ public class Request {
     public String url;
     public String content;
     public Map<String,String> headers;
-
     public RequestMethod method;
 
     public Request(String url){

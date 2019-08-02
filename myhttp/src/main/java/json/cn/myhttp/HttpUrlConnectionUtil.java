@@ -15,18 +15,21 @@ public class HttpUrlConnectionUtil {
     public static String execute(Request request) throws Exception{
         switch (request.method){
             case GET:
+            case DELETE:
                 return get(request);
             case POST:
-                return post(request);
             case PUT:
-                return post(request);
-            case DELETE:
                 return post(request);
         }
         return null;
     }
 
-
+    /**
+     * get 请求
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private static String get(Request request) throws Exception {
 
         HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
@@ -53,6 +56,12 @@ public class HttpUrlConnectionUtil {
         return null;
     }
 
+    /**
+     * post请求
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private static String post(Request request) throws Exception {
 
         HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
@@ -84,8 +93,12 @@ public class HttpUrlConnectionUtil {
         return null;
     }
 
+    /**
+     * 添加请求头
+     * @param connection
+     * @param headers
+     */
     private static void addHeaders(HttpURLConnection connection,Map<String,String> headers){
-        // 添加请求头
         if(headers == null || headers.isEmpty()){
             return;
         }
