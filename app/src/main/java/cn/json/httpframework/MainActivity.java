@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import json.cn.myhttp.JsonCallback;
 import json.cn.myhttp.Request;
+import json.cn.myhttp.RequestMethod;
 import json.cn.myhttp.RequestTask;
+
 
 /**
  * Created by wangkang on 2019/8/2.
@@ -60,7 +62,7 @@ public class MainActivity extends Activity {
 
         String url = "http://api.stay4it.com/v1/public/core/?service=user.login";
         String content = "account=stay4it&password=123456";
-        Request request = new Request(url, Request.RequestMethod.POST);
+        Request request = new Request(url, RequestMethod.POST);
         request.content = content;
         RequestTask requestTask = new RequestTask(request);
         requestTask.setCallBack(new JsonCallback<User>() {
