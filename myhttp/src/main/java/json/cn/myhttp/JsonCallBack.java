@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 /**
@@ -40,13 +42,11 @@ public abstract class JsonCallBack<T> implements ICallBack<T> {
             JSONObject data = jsonObject.optJSONObject("data");
 
             Gson gson = new Gson();
-            return gson.fromJson(data.toString(),clz);
+            //获取一个类中泛型的实际类型 important
+            Type type = ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+            return gson.fromJson(data.toString(),type);
         }
         return  null;
     }
 
-    public ICallBack setReturnType(Class<T> clz){
-        this.clz = clz;
-        return this;
-    }
 }

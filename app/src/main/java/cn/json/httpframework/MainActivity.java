@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
             public void onFailure(Exception e) {
                 Log.d("result",e.toString());
             }
-        }.setReturnType(User.class));
+        });
         requestTask.execute();
     }
 
