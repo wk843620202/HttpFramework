@@ -1,7 +1,6 @@
 package json.cn.myhttp;
 
 import android.os.AsyncTask;
-
 import java.net.HttpURLConnection;
 
 /**

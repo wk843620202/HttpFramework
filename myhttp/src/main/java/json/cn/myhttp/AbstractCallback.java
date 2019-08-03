@@ -1,30 +1,21 @@
 package json.cn.myhttp;
 
 
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 /**
  * Created by wangkang on 2019/8/3.
  */
 
-public abstract class JsonCallBack<T> implements ICallBack<T> {
-
-
-    private Class<T> clz;
+public abstract class AbstractCallback<T> implements ICallBack<T> {
 
     @Override
     public T parse(HttpURLConnection connection) throws Exception {
 
         int status = connection.getResponseCode();
-        if (status == 200) {
+        if (status == HttpStatus.CODE_OK) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             InputStream is = connection.getInputStream();
             byte[] buffer = new byte[2048];
@@ -37,16 +28,16 @@ public abstract class JsonCallBack<T> implements ICallBack<T> {
             bos.close();
 
             String result = new String(bos.toByteArray());
-
-            JSONObject jsonObject = new JSONObject(result);
-            JSONObject data = jsonObject.optJSONObject("data");
-
-            Gson gson = new Gson();
-            //获取一个类中泛型的实际类型 important
-            Type type = ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-            return gson.fromJson(data.toString(),type);
+            return bindData(result);
         }
         return  null;
     }
+
+    /**
+     * 解析数据，如何解析由子类实现
+     * @param result
+     * @return
+     */
+    protected abstract T bindData(String result) throws Exception;
 
 }

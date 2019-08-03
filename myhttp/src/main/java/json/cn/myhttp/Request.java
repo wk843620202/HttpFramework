@@ -4,13 +4,9 @@ import java.util.Map;
 
 /**
  * Created by wangkang on 2019/8/2.
+ * 构建请求对象，包含请求相关参数
  */
-
 public class Request {
-
-    public enum RequestMethod{
-        GET,POST,PUT,DELETE
-    }
 
     public String url;
     public String content;

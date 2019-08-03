@@ -7,9 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import json.cn.myhttp.HttpUrlConnectionUtil;
-import json.cn.myhttp.ICallBack;
-import json.cn.myhttp.JsonCallBack;
+import json.cn.myhttp.JsonCallback;
 import json.cn.myhttp.Request;
 import json.cn.myhttp.RequestTask;
 
@@ -43,7 +41,7 @@ public class MainActivity extends Activity {
         String url = "http://api.stay4it.com/v1/public/core/?service=user.getAll";
         Request request = new Request(url);
         RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new JsonCallBack<String>() {
+        requestTask.setCallBack(new JsonCallback<String>() {
 
             @Override
             public void onSuccess(String response) {
@@ -65,7 +63,7 @@ public class MainActivity extends Activity {
         Request request = new Request(url, Request.RequestMethod.POST);
         request.content = content;
         RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new JsonCallBack<User>() {
+        requestTask.setCallBack(new JsonCallback<User>() {
             @Override
             public void onSuccess(User response) {
                 Log.d("result",response.toString());

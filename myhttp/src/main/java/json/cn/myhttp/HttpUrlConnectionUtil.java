@@ -1,7 +1,5 @@
 package json.cn.myhttp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -41,20 +39,6 @@ public class HttpUrlConnectionUtil {
 
         return connection;
 
-        /*int status = connection.getResponseCode();
-        if(status == 200){
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            InputStream is = connection.getInputStream();
-            byte[] buffer = new byte[2048];
-            int len;
-            while ((len = is.read(buffer)) != -1){
-                bos.write(buffer,0,len);
-            }
-            is.close();
-            bos.flush();
-            bos.close();
-            return new String(bos.toByteArray());
-        }*/
     }
 
     /**
@@ -78,22 +62,6 @@ public class HttpUrlConnectionUtil {
         os.write(request.content.getBytes());
 
         return connection;
-        /*
-        int status = connection.getResponseCode();
-        if(status == 200){
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            InputStream is = connection.getInputStream();
-            byte[] buffer = new byte[2048];
-            int len;
-            while ((len = is.read(buffer)) != -1){
-                bos.write(buffer,0,len);
-            }
-            is.close();
-            bos.flush();
-            bos.close();
-            return new String(bos.toByteArray());
-        }
-        return null;*/
     }
 
     /**
