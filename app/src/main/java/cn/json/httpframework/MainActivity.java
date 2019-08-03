@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import json.cn.myhttp.HttpUrlConnectionUtil;
 import json.cn.myhttp.ICallBack;
+import json.cn.myhttp.JsonCallBack;
 import json.cn.myhttp.Request;
 import json.cn.myhttp.RequestTask;
 
@@ -28,68 +29,53 @@ public class MainActivity extends Activity {
         findViewById(R.id.tv_get_data).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             //   testGet();
-             //   testPost();
-                testGetOnSubThread();
+
+             //   testGetOnSubThread();
+
+                testPostOnSubThread();
             }
         });
     }
 
-
-    public static void testGet(){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String url = "http://api.stay4it.com/v1/public/core/?service=user.getAll";
-                Request request = new Request(url);
-                String response = null;
-                try {
-                    response = HttpUrlConnectionUtil.execute(request);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d("result",response);
-            }
-        }).start();
-    }
-
-    public static void testPost(){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String url = "http://api.stay4it.com/v1/public/core/?service=user.login";
-                String content = "account=stay4it&password=123456";
-                Request request = new Request(url, Request.RequestMethod.POST);
-                request.content = content;
-                String response = null;
-                try {
-                    response = HttpUrlConnectionUtil.execute(request);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d("result",response);
-            }
-        }).start();
-    }
 
     public static void testGetOnSubThread(){
 
         String url = "http://api.stay4it.com/v1/public/core/?service=user.getAll";
         Request request = new Request(url);
         RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new ICallBack() {
+        requestTask.setCallBack(new JsonCallBack<String>() {
+
             @Override
             public void onSuccess(String response) {
-                Log.d("result",response);
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+        requestTask.execute();
+    }
+
+    public static void testPostOnSubThread(){
+
+        String url = "http://api.stay4it.com/v1/public/core/?service=user.login";
+        String content = "account=stay4it&password=123456";
+        Request request = new Request(url, Request.RequestMethod.POST);
+        request.content = content;
+        RequestTask requestTask = new RequestTask(request);
+        requestTask.setCallBack(new JsonCallBack<User>() {
+            @Override
+            public void onSuccess(User response) {
+                Log.d("result",response.toString());
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.d("result",e.toString());
             }
-        });
+        }.setReturnType(User.class));
         requestTask.execute();
     }
 

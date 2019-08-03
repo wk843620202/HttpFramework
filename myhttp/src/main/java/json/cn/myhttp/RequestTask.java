@@ -2,6 +2,8 @@ package json.cn.myhttp;
 
 import android.os.AsyncTask;
 
+import java.net.HttpURLConnection;
+
 /**
  * Created by wangkang on 2019/8/2.
  */
@@ -27,8 +29,9 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     @Override
     protected Object doInBackground(Void... Strings) {
         try {
-            String result = HttpUrlConnectionUtil.execute(request);
-            return result;
+            HttpURLConnection connection = HttpUrlConnectionUtil.execute(request);
+            return mICallBack.parse(connection);
+
         } catch (Exception e) {
             e.printStackTrace();
             return e;
@@ -41,7 +44,7 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
         if(s instanceof Exception){
             mICallBack.onFailure((Exception) s);
         }else {
-            mICallBack.onSuccess((String) s);
+            mICallBack.onSuccess(s);
         }
     }
 }

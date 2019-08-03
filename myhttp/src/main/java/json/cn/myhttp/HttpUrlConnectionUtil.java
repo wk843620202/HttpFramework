@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class HttpUrlConnectionUtil {
 
-    public static String execute(Request request) throws Exception{
+    public static HttpURLConnection execute(Request request) throws Exception{
         switch (request.method){
             case GET:
             case DELETE:
@@ -30,7 +30,7 @@ public class HttpUrlConnectionUtil {
      * @return
      * @throws Exception
      */
-    private static String get(Request request) throws Exception {
+    private static HttpURLConnection get(Request request) throws Exception {
 
         HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
         connection.setConnectTimeout(15 * 1000);
@@ -39,7 +39,9 @@ public class HttpUrlConnectionUtil {
 
         addHeaders(connection, request.headers);
 
-        int status = connection.getResponseCode();
+        return connection;
+
+        /*int status = connection.getResponseCode();
         if(status == 200){
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             InputStream is = connection.getInputStream();
@@ -52,8 +54,7 @@ public class HttpUrlConnectionUtil {
             bos.flush();
             bos.close();
             return new String(bos.toByteArray());
-        }
-        return null;
+        }*/
     }
 
     /**
@@ -62,7 +63,7 @@ public class HttpUrlConnectionUtil {
      * @return
      * @throws Exception
      */
-    private static String post(Request request) throws Exception {
+    private static HttpURLConnection post(Request request) throws Exception {
 
         HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
         connection.setConnectTimeout(15 * 1000);
@@ -76,6 +77,8 @@ public class HttpUrlConnectionUtil {
         OutputStream os =  connection.getOutputStream();
         os.write(request.content.getBytes());
 
+        return connection;
+        /*
         int status = connection.getResponseCode();
         if(status == 200){
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -90,7 +93,7 @@ public class HttpUrlConnectionUtil {
             bos.close();
             return new String(bos.toByteArray());
         }
-        return null;
+        return null;*/
     }
 
     /**

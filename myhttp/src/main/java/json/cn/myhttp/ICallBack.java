@@ -1,11 +1,15 @@
 package json.cn.myhttp;
 
+import java.net.HttpURLConnection;
+
 /**
  * Created by wangkang on 2019/8/2.
  */
 
-public interface ICallBack {
+public interface ICallBack<T> {
 
-    void onSuccess(String response);
+    void onSuccess(T response);
     void onFailure(Exception e);
+
+    T parse(HttpURLConnection connection) throws Exception;
 }
