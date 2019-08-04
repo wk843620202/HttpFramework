@@ -3,6 +3,8 @@ package json.cn.myhttp;
 import android.os.AsyncTask;
 import java.net.HttpURLConnection;
 
+import json.cn.myhttp.callback.ICallBack;
+
 /**
  * Created by wangkang on 2019/8/2.
  */

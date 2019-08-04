@@ -2,12 +2,17 @@ package cn.json.httpframework;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import json.cn.myhttp.JsonCallback;
+import java.io.File;
+import java.io.IOException;
+
+import json.cn.myhttp.callback.FileCallback;
+import json.cn.myhttp.callback.JsonCallback;
 import json.cn.myhttp.Request;
 import json.cn.myhttp.RequestMethod;
 import json.cn.myhttp.RequestTask;
@@ -32,7 +37,9 @@ public class MainActivity extends Activity {
 
              //   testGetOnSubThread();
 
-                testPostOnSubThread();
+             //   testPostOnSubThread();
+
+                testPostOnSubThreadForDownload();
             }
         });
     }
@@ -76,6 +83,38 @@ public class MainActivity extends Activity {
                 Log.d("result",e.toString());
             }
         });
+        requestTask.execute();
+    }
+
+
+    public static void testPostOnSubThreadForDownload(){
+
+        String url = "http://api.stay4it.com/v1/public/core/?service=user.login";
+        String content = "account=stay4it&password=123456";
+        String savedPath = Environment.getExternalStorageDirectory() + File.separator + "demo.txt";
+        File file = new File(savedPath);
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Request request = new Request(url, RequestMethod.POST);
+        request.content = content;
+        RequestTask requestTask = new RequestTask(request);
+        requestTask.setCallBack(new FileCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Log.e("path",response);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("path",e.toString());
+            }
+        }.setCachePath(savedPath));
         requestTask.execute();
     }
 
