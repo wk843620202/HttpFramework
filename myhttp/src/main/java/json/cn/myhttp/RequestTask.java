@@ -1,9 +1,8 @@
 package json.cn.myhttp;
 
 import android.os.AsyncTask;
-import java.net.HttpURLConnection;
 
-import json.cn.myhttp.callback.ICallBack;
+import java.net.HttpURLConnection;
 
 /**
  * Created by wangkang on 2019/8/2.
@@ -12,14 +11,10 @@ import json.cn.myhttp.callback.ICallBack;
 public class RequestTask extends AsyncTask<Void,Integer,Object> {
 
     Request request;
-    ICallBack mICallBack;
+
 
     public RequestTask(Request request){
         this.request = request;
-    }
-
-    public void setCallBack(ICallBack callBack){
-        this.mICallBack = callBack;
     }
 
     @Override
@@ -31,8 +26,16 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     protected Object doInBackground(Void... Strings) {
         try {
             HttpURLConnection connection = HttpUrlConnectionUtil.execute(request);
-            return mICallBack.parse(connection);
-
+            if(request.enableProgressUdate){
+                return request.mICallBack.parse(connection, new OnProgressUpdatedListener() {
+                    @Override
+                    public void onProgressUpdate(int curLen, int totalLen) {
+                        publishProgress(curLen,totalLen);
+                    }
+                });
+            }else {
+                return request.mICallBack.parse(connection);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return e;
@@ -40,12 +43,20 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     }
 
     @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        if(request.mICallBack != null){
+            request.mICallBack.onProgressUpdate(values[0],values[1]);
+        }
+    }
+
+    @Override
     protected void onPostExecute(Object s) {
         super.onPostExecute(s);
         if(s instanceof Exception){
-            mICallBack.onFailure((Exception) s);
+            request.mICallBack.onFailure((Exception) s);
         }else {
-            mICallBack.onSuccess(s);
+            request.mICallBack.onSuccess(s);
         }
     }
 }

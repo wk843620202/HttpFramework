@@ -39,7 +39,8 @@ public class MainActivity extends Activity {
 
              //   testPostOnSubThread();
 
-                testPostOnSubThreadForDownload();
+             //   testPostOnSubThreadForDownload();
+                testPostOnSubThreadForDownloadProgress();
             }
         });
     }
@@ -49,8 +50,8 @@ public class MainActivity extends Activity {
 
         String url = "http://api.stay4it.com/v1/public/core/?service=user.getAll";
         Request request = new Request(url);
-        RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new JsonCallback<String>() {
+
+        request.setCallBack(new JsonCallback<String>() {
 
             @Override
             public void onSuccess(String response) {
@@ -62,6 +63,7 @@ public class MainActivity extends Activity {
 
             }
         });
+        RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
     }
 
@@ -71,8 +73,8 @@ public class MainActivity extends Activity {
         String content = "account=stay4it&password=123456";
         Request request = new Request(url, RequestMethod.POST);
         request.content = content;
-        RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new JsonCallback<User>() {
+
+        request.setCallBack(new JsonCallback<User>() {
             @Override
             public void onSuccess(User response) {
                 Log.d("result",response.toString());
@@ -83,10 +85,14 @@ public class MainActivity extends Activity {
                 Log.d("result",e.toString());
             }
         });
+        RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
     }
 
 
+    /**
+     * 文件下载
+     */
     public static void testPostOnSubThreadForDownload(){
 
         String url = "http://api.stay4it.com/v1/public/core/?service=user.login";
@@ -103,8 +109,9 @@ public class MainActivity extends Activity {
 
         Request request = new Request(url, RequestMethod.POST);
         request.content = content;
-        RequestTask requestTask = new RequestTask(request);
-        requestTask.setCallBack(new FileCallback() {
+
+        request.setCallBack(new FileCallback() {
+
             @Override
             public void onSuccess(String response) {
                 Log.e("path",response);
@@ -115,6 +122,47 @@ public class MainActivity extends Activity {
                 Log.e("path",e.toString());
             }
         }.setCachePath(savedPath));
+        RequestTask requestTask = new RequestTask(request);
+        requestTask.execute();
+    }
+
+    /**
+     * 文件下载进度更新
+     */
+    public static void testPostOnSubThreadForDownloadProgress(){
+
+        String url = "http://api.stay4it.com/uploads/test.jpg";
+
+        String savedPath = Environment.getExternalStorageDirectory() + File.separator + "text.jpg";
+        File file = new File(savedPath);
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Request request = new Request(url, RequestMethod.GET);
+        request.setCallBack(new FileCallback() {
+            @Override
+            public void onProgressUpdate(int curLen, int totalLen) {
+                super.onProgressUpdate(curLen, totalLen);
+                Log.e("progress", curLen + "/" + totalLen);
+            }
+
+            @Override
+            public void onSuccess(String response) {
+                Log.e("path",response);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("path",e.toString());
+            }
+        }.setCachePath(savedPath));
+        request.enableProgressUdated(false);
+        RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
     }
 

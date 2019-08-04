@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import json.cn.myhttp.HttpStatus;
+import json.cn.myhttp.OnProgressUpdatedListener;
 
 /**
  * Created by wangkang on 2019/8/3.
@@ -18,6 +19,11 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
 
     @Override
     public T parse(HttpURLConnection connection) throws Exception {
+        return  parse(connection, null);
+    }
+
+    @Override
+    public T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws Exception {
 
         int status = connection.getResponseCode();
         if (status == HttpStatus.CODE_OK) {
@@ -40,10 +46,18 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
                 // 文件下载
                 FileOutputStream fos = new FileOutputStream(path);
                 InputStream is = connection.getInputStream();
+
+                int totalLen = connection.getContentLength();
+
                 byte[] buffer = new byte[2048];
                 int len;
+                int curLen = 0;
                 while ((len = is.read(buffer)) != -1) {
                     fos.write(buffer, 0, len);
+                    curLen += len;
+                    if(listener != null){
+                        listener.onProgressUpdate(curLen, totalLen);
+                    }
                 }
                 is.close();
                 fos.flush();
@@ -74,4 +88,8 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
 
     }
 
+    @Override
+    public void onProgressUpdate(int curLen, int totalLen) {
+
+    }
 }
