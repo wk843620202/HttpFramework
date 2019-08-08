@@ -36,6 +36,11 @@ public class Request {
     public ICallBack mICallBack;
 
     /**
+     * 请求最大重试次数
+     */
+    public int maxRetryCount = 3;
+
+    /**
      * 是否需要更新
      */
     public boolean enableProgressUpdate = false;

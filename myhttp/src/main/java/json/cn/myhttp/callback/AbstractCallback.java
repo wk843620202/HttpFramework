@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 
 import json.cn.myhttp.AppException;
 import json.cn.myhttp.HttpStatus;
@@ -71,8 +72,11 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
                 throw new AppException(status, connection.getResponseMessage());
             }
 
+        }catch (SocketTimeoutException e) {
+            //网络请求超时
+            throw new AppException(AppException.ErrorType.TIMEOUT, e.getMessage());
         }catch (Exception e){
-            throw new AppException(e.getMessage());
+            throw new AppException(AppException.ErrorType.SERVER, e.getMessage());
         }
     }
 

@@ -3,8 +3,10 @@ package json.cn.myhttp;
 import android.webkit.URLUtil;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Map;
 
@@ -15,7 +17,7 @@ public class HttpUrlConnectionUtil {
 
     public static HttpURLConnection execute(Request request) throws AppException{
         if(!URLUtil.isNetworkUrl(request.url)){
-            throw new AppException("the url:" + request.url + " is not valid");
+            throw new AppException(AppException.ErrorType.MANUAL, "the url:" + request.url + " is not valid");
         }
         switch (request.method){
             case GET:
@@ -45,8 +47,11 @@ public class HttpUrlConnectionUtil {
 
             addHeaders(connection, request.headers);
 
+        } catch (SocketTimeoutException e) {
+            //网络请求超时
+            throw new AppException(AppException.ErrorType.TIMEOUT, e.getMessage());
         } catch (IOException e) {
-            throw new AppException();
+            throw new AppException(AppException.ErrorType.SERVER, e.getMessage());
         }
         return connection;
 
@@ -72,8 +77,11 @@ public class HttpUrlConnectionUtil {
             // 写入请求参数
             OutputStream os =  connection.getOutputStream();
             os.write(request.content.getBytes());
-        }catch (IOException e){
-            throw new AppException();
+        }catch (SocketTimeoutException e) {
+            //网络请求超时
+            throw new AppException(AppException.ErrorType.TIMEOUT, e.getMessage());
+        } catch (IOException e) {
+            throw new AppException(AppException.ErrorType.SERVER, e.getMessage());
         }
 
         return connection;

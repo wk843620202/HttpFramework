@@ -1,6 +1,7 @@
 package json.cn.myhttp;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.net.HttpURLConnection;
 
@@ -11,7 +12,6 @@ import java.net.HttpURLConnection;
 public class RequestTask extends AsyncTask<Void,Integer,Object> {
 
     Request request;
-
 
     public RequestTask(Request request){
         this.request = request;
@@ -24,6 +24,10 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
 
     @Override
     protected Object doInBackground(Void... Strings) {
+        return request(0);
+    }
+
+    private Object request(int retryCount){
         try {
             HttpURLConnection connection = HttpUrlConnectionUtil.execute(request);
             if(request.enableProgressUpdate){
@@ -37,7 +41,14 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
                 return request.mICallBack.parse(connection);
             }
         } catch (AppException e) {
-            e.printStackTrace();
+            // 请求超时重试
+            if(e.errorType == AppException.ErrorType.TIMEOUT){
+                if(retryCount < request.maxRetryCount){
+                    retryCount ++;
+                    Log.d("retry count:" , retryCount+"");
+                    request(retryCount);
+                }
+            }
             return e;
         }
     }
