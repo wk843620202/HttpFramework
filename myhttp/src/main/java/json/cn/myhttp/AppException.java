@@ -7,18 +7,18 @@ package json.cn.myhttp;
 public class AppException extends Exception {
 
     public int statusCode;
-    public String message;
+    public String errorMessage;
 
     public AppException(){}
 
-    public AppException(int statusCode, String message) {
-        super(message);
+    public AppException(int statusCode, String errorMessage) {
+        super(errorMessage);
         this.statusCode = statusCode;
-        this.message = message;
+        this.errorMessage = errorMessage;
     }
 
-    public AppException(String message) {
-        super(message);
-        this.message = message;
+    public AppException(String errorMessage) {
+        super(errorMessage);
+        this.errorMessage = errorMessage;
     }
 }

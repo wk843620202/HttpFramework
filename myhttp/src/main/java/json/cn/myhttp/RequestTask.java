@@ -26,7 +26,7 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     protected Object doInBackground(Void... Strings) {
         try {
             HttpURLConnection connection = HttpUrlConnectionUtil.execute(request);
-            if(request.enableProgressUdate){
+            if(request.enableProgressUpdate){
                 return request.mICallBack.parse(connection, new OnProgressUpdatedListener() {
                     @Override
                     public void onProgressUpdate(int curLen, int totalLen) {
@@ -54,7 +54,14 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     protected void onPostExecute(Object s) {
         super.onPostExecute(s);
         if(s instanceof AppException){
-            request.mICallBack.onFailure((AppException) s);
+            if(request.onGlobalExceptionListener != null){
+                if(!request.onGlobalExceptionListener.handleException((AppException) s)){
+                    request.mICallBack.onFailure((AppException) s);
+                }
+            }else {
+                request.mICallBack.onFailure((AppException) s);
+            }
+
         }else {
             request.mICallBack.onSuccess(s);
         }

@@ -1,5 +1,7 @@
 package json.cn.myhttp;
 
+import android.webkit.URLUtil;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -12,6 +14,9 @@ import java.util.Map;
 public class HttpUrlConnectionUtil {
 
     public static HttpURLConnection execute(Request request) throws AppException{
+        if(!URLUtil.isNetworkUrl(request.url)){
+            throw new AppException("the url:" + request.url + " is not valid");
+        }
         switch (request.method){
             case GET:
             case DELETE:

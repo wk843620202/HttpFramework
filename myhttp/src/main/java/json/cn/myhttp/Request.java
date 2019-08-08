@@ -38,7 +38,8 @@ public class Request {
     /**
      * 是否需要更新
      */
-    public boolean enableProgressUdate = false;
+    public boolean enableProgressUpdate = false;
+    public OnGlobalExceptionListener onGlobalExceptionListener;
 
     public Request(String url){
         this.url = url;
@@ -54,7 +55,19 @@ public class Request {
         this.mICallBack = callBack;
     }
 
-    public void enableProgressUdated(boolean enableProgressUdate) {
-        this.enableProgressUdate = enableProgressUdate;
+    /**
+     * 设置是否有进度
+     * @param enableProgressUdate
+     */
+    public void enableProgressUpdated(boolean enableProgressUdate) {
+        this.enableProgressUpdate = enableProgressUdate;
+    }
+
+    /**
+     * 设置全局异常监听
+     * @param onGlobalExceptionListener
+     */
+    public void setOnGlobalExceptionListener(OnGlobalExceptionListener onGlobalExceptionListener) {
+        this.onGlobalExceptionListener = onGlobalExceptionListener;
     }
 }

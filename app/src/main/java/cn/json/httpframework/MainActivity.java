@@ -1,6 +1,5 @@
 package cn.json.httpframework;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ import json.cn.myhttp.RequestTask;
 /**
  * Created by wangkang on 2019/8/2.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
     public TextView mTvDetail;
 
@@ -130,7 +129,7 @@ public class MainActivity extends Activity {
     /**
      * 文件下载进度更新
      */
-    public static void testPostOnSubThreadForDownloadProgress(){
+    public void testPostOnSubThreadForDownloadProgress(){
 
         String url = "http://api.stay4it.com/uploads/test.jpg";
 
@@ -162,10 +161,11 @@ public class MainActivity extends Activity {
                 if(e.statusCode == 403){
                     // password incorrect
                 }
-                Log.e("errorCode",e.statusCode + ""+ "----" + e.message);
+                Log.e("errorCode",e.statusCode + ""+ "----" + e.errorMessage);
             }
         }.setCachePath(savedPath));
-        request.enableProgressUdated(true);
+        request.enableProgressUpdated(true);
+        request.setOnGlobalExceptionListener(this);
         RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
     }
