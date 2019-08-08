@@ -1,11 +1,11 @@
 package json.cn.myhttp.callback;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
+import json.cn.myhttp.AppException;
 import json.cn.myhttp.HttpStatus;
 import json.cn.myhttp.OnProgressUpdatedListener;
 
@@ -18,56 +18,62 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
     private String path;
 
     @Override
-    public T parse(HttpURLConnection connection) throws Exception {
+    public T parse(HttpURLConnection connection) throws AppException {
         return  parse(connection, null);
     }
 
     @Override
-    public T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws Exception {
+    public T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws AppException {
 
-        int status = connection.getResponseCode();
-        if (status == HttpStatus.CODE_OK) {
+        try{
 
-            if(path == null){
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                InputStream is = connection.getInputStream();
-                byte[] buffer = new byte[2048];
-                int len;
-                while ((len = is.read(buffer)) != -1) {
-                    bos.write(buffer, 0, len);
-                }
-                is.close();
-                bos.flush();
-                bos.close();
+            int status = connection.getResponseCode();
+            if (status == HttpStatus.CODE_OK) {
 
-                String result = new String(bos.toByteArray());
-                return bindData(result);
-            }else {
-                // 文件下载
-                FileOutputStream fos = new FileOutputStream(path);
-                InputStream is = connection.getInputStream();
-
-                int totalLen = connection.getContentLength();
-
-                byte[] buffer = new byte[2048];
-                int len;
-                int curLen = 0;
-                while ((len = is.read(buffer)) != -1) {
-                    fos.write(buffer, 0, len);
-                    curLen += len;
-                    if(listener != null){
-                        listener.onProgressUpdate(curLen, totalLen);
+                if(path == null){
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    InputStream is = connection.getInputStream();
+                    byte[] buffer = new byte[2048];
+                    int len;
+                    while ((len = is.read(buffer)) != -1) {
+                        bos.write(buffer, 0, len);
                     }
-                }
-                is.close();
-                fos.flush();
-                fos.close();
+                    is.close();
+                    bos.flush();
+                    bos.close();
 
-                return bindData(path);
+                    String result = new String(bos.toByteArray());
+                    return bindData(result);
+                }else {
+                    // 文件下载
+                    FileOutputStream fos = new FileOutputStream(path);
+                    InputStream is = connection.getInputStream();
+
+                    int totalLen = connection.getContentLength();
+
+                    byte[] buffer = new byte[2048];
+                    int len;
+                    int curLen = 0;
+                    while ((len = is.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                        curLen += len;
+                        if(listener != null){
+                            listener.onProgressUpdate(curLen, totalLen);
+                        }
+                    }
+                    is.close();
+                    fos.flush();
+                    fos.close();
+
+                    return bindData(path);
+                }
+            }else {
+                throw new AppException(status, connection.getResponseMessage());
             }
 
+        }catch (Exception e){
+            throw new AppException(e.getMessage());
         }
-        return  null;
     }
 
     /**
@@ -75,7 +81,7 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
      * @param result
      * @return
      */
-    protected abstract T bindData(String result) throws Exception;
+    protected abstract T bindData(String result) throws AppException;
 
     /**
      * 设置文件下载缓存路径

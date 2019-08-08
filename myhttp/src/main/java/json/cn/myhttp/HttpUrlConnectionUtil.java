@@ -1,5 +1,6 @@
 package json.cn.myhttp;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class HttpUrlConnectionUtil {
 
-    public static HttpURLConnection execute(Request request) throws Exception{
+    public static HttpURLConnection execute(Request request) throws AppException{
         switch (request.method){
             case GET:
             case DELETE:
@@ -28,15 +29,20 @@ public class HttpUrlConnectionUtil {
      * @return
      * @throws Exception
      */
-    private static HttpURLConnection get(Request request) throws Exception {
+    private static HttpURLConnection get(Request request) throws AppException {
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
-        connection.setConnectTimeout(15 * 1000);
-        connection.setRequestMethod(request.method.name());
-        connection.setReadTimeout(15 * 1000);
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(request.url).openConnection();
+            connection.setConnectTimeout(15 * 1000);
+            connection.setRequestMethod(request.method.name());
+            connection.setReadTimeout(15 * 1000);
 
-        addHeaders(connection, request.headers);
+            addHeaders(connection, request.headers);
 
+        } catch (IOException e) {
+            throw new AppException();
+        }
         return connection;
 
     }
@@ -47,19 +53,23 @@ public class HttpUrlConnectionUtil {
      * @return
      * @throws Exception
      */
-    private static HttpURLConnection post(Request request) throws Exception {
+    private static HttpURLConnection post(Request request) throws AppException {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(request.url).openConnection();
+            connection.setConnectTimeout(15 * 1000);
+            connection.setRequestMethod(request.method.name());
+            connection.setReadTimeout(15 * 1000);
+            connection.setDoOutput(true);
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(request.url).openConnection();
-        connection.setConnectTimeout(15 * 1000);
-        connection.setRequestMethod(request.method.name());
-        connection.setReadTimeout(15 * 1000);
-        connection.setDoOutput(true);
+            addHeaders(connection,request.headers);
 
-        addHeaders(connection,request.headers);
-
-        // 写入请求参数
-        OutputStream os =  connection.getOutputStream();
-        os.write(request.content.getBytes());
+            // 写入请求参数
+            OutputStream os =  connection.getOutputStream();
+            os.write(request.content.getBytes());
+        }catch (IOException e){
+            throw new AppException();
+        }
 
         return connection;
     }

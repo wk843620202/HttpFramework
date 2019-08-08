@@ -2,6 +2,7 @@ package json.cn.myhttp.callback;
 
 import java.net.HttpURLConnection;
 
+import json.cn.myhttp.AppException;
 import json.cn.myhttp.OnProgressUpdatedListener;
 
 /**
@@ -20,10 +21,10 @@ public interface ICallBack<T> {
      * 失败
      * @param e
      */
-    void onFailure(Exception e);
+    void onFailure(AppException e);
 
 
-    public T parse(HttpURLConnection connection) throws Exception;
+    public T parse(HttpURLConnection connection) throws AppException;
 
     /**
      *
@@ -32,7 +33,7 @@ public interface ICallBack<T> {
      * @return
      * @throws Exception
      */
-    T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws Exception;
+    T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws AppException;
 
     /**
      * 下载进度更新

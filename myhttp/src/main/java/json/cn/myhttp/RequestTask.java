@@ -36,7 +36,7 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
             }else {
                 return request.mICallBack.parse(connection);
             }
-        } catch (Exception e) {
+        } catch (AppException e) {
             e.printStackTrace();
             return e;
         }
@@ -53,8 +53,8 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     @Override
     protected void onPostExecute(Object s) {
         super.onPostExecute(s);
-        if(s instanceof Exception){
-            request.mICallBack.onFailure((Exception) s);
+        if(s instanceof AppException){
+            request.mICallBack.onFailure((AppException) s);
         }else {
             request.mICallBack.onSuccess(s);
         }

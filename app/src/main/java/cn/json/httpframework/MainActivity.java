@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 
+import json.cn.myhttp.AppException;
 import json.cn.myhttp.callback.FileCallback;
 import json.cn.myhttp.callback.JsonCallback;
 import json.cn.myhttp.Request;
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(AppException e) {
 
             }
         });
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(AppException e) {
                 Log.d("result",e.toString());
             }
         });
@@ -118,7 +119,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(AppException e) {
                 Log.e("path",e.toString());
             }
         }.setCachePath(savedPath));
@@ -157,11 +158,14 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onFailure(Exception e) {
-                Log.e("path",e.toString());
+            public void onFailure(AppException e) {
+                if(e.statusCode == 403){
+                    // password incorrect
+                }
+                Log.e("errorCode",e.statusCode + ""+ "----" + e.message);
             }
         }.setCachePath(savedPath));
-        request.enableProgressUdated(false);
+        request.enableProgressUdated(true);
         RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
     }
