@@ -41,4 +41,6 @@ public interface ICallBack<T> {
      * @param totalLen
      */
     void onProgressUpdate(int curLen, int totalLen);
+
+    void cancel();
 }

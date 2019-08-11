@@ -17,6 +17,7 @@ import json.cn.myhttp.OnProgressUpdatedListener;
 public abstract class AbstractCallback<T> implements ICallBack<T> {
 
     private String path;
+    private volatile boolean isCancelled;
 
     @Override
     public T parse(HttpURLConnection connection) throws AppException {
@@ -27,6 +28,7 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
     public T parse(HttpURLConnection connection, OnProgressUpdatedListener listener) throws AppException {
 
         try{
+            checkIfCancelled();
 
             int status = connection.getResponseCode();
             if (status == HttpStatus.CODE_OK) {
@@ -37,6 +39,7 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
                     byte[] buffer = new byte[2048];
                     int len;
                     while ((len = is.read(buffer)) != -1) {
+                        checkIfCancelled();
                         bos.write(buffer, 0, len);
                     }
                     is.close();
@@ -56,6 +59,7 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
                     int len;
                     int curLen = 0;
                     while ((len = is.read(buffer)) != -1) {
+                        checkIfCancelled();
                         fos.write(buffer, 0, len);
                         curLen += len;
                         if(listener != null){
@@ -78,6 +82,21 @@ public abstract class AbstractCallback<T> implements ICallBack<T> {
         }catch (Exception e){
             throw new AppException(AppException.ErrorType.SERVER, e.getMessage());
         }
+    }
+
+    /**
+     * 判断请求是否取消
+     * @throws AppException
+     */
+    public void checkIfCancelled() throws AppException{
+        if(isCancelled){
+            throw new AppException(AppException.ErrorType.CANCEL, "the request has been cancelled");
+        }
+    }
+
+    @Override
+    public void cancel(){
+        isCancelled = true;
     }
 
     /**

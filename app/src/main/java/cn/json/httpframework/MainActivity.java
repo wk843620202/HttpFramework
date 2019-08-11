@@ -40,7 +40,8 @@ public class MainActivity extends BaseActivity {
              //   testPostOnSubThread();
 
              //   testPostOnSubThreadForDownload();
-                testPostOnSubThreadForDownloadProgress();
+             //   testPostOnSubThreadForDownloadProgress();
+                testPostOnSubThreadForDownloadProgressCancel();
             }
         });
     }
@@ -168,6 +169,46 @@ public class MainActivity extends BaseActivity {
         request.setOnGlobalExceptionListener(this);
         RequestTask requestTask = new RequestTask(request);
         requestTask.execute();
+    }
+
+    /**
+     * 取消请求
+     */
+    public void testPostOnSubThreadForDownloadProgressCancel(){
+
+        String url = "http://api.stay4it.com/uploads/test.jpg";
+
+        String savedPath = Environment.getExternalStorageDirectory() + File.separator + "text.jpg";
+        final Request request = new Request(url, RequestMethod.GET);
+        request.setCallBack(new FileCallback() {
+            @Override
+            public void onProgressUpdate(int curLen, int totalLen) {
+                super.onProgressUpdate(curLen, totalLen);
+                Log.e("progress", curLen + "/" + totalLen);
+                if((curLen * 100L) / totalLen > 50 ){
+                    request.cancel();
+                }
+            }
+
+            @Override
+            public void onSuccess(String response) {
+                Log.e("path",response);
+            }
+
+            @Override
+            public void onFailure(AppException e) {
+                if(e.statusCode == 403){
+                    // password incorrect
+                }
+                Log.e("errorCode",e.statusCode + ""+ "----" + e.errorMessage);
+            }
+        }.setCachePath(savedPath));
+        request.enableProgressUpdated(true);
+        request.setOnGlobalExceptionListener(this);
+        RequestTask requestTask = new RequestTask(request);
+        requestTask.execute();
+     //   requestTask.cancel(true);
+      //  request.cancel();
     }
 
 }

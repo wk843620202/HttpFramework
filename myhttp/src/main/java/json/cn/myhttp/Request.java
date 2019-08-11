@@ -40,6 +40,8 @@ public class Request {
      */
     public int maxRetryCount = 3;
 
+    private volatile boolean isCancelled;
+
     /**
      * 是否需要更新
      */
@@ -74,5 +76,16 @@ public class Request {
      */
     public void setOnGlobalExceptionListener(OnGlobalExceptionListener onGlobalExceptionListener) {
         this.onGlobalExceptionListener = onGlobalExceptionListener;
+    }
+
+    public void cancel(){
+        isCancelled = true;
+        mICallBack.cancel();
+    }
+
+    public void checkIfCancelled() throws AppException{
+        if(isCancelled){
+            throw new AppException(AppException.ErrorType.CANCEL, "the request has been cancelled");
+        }
     }
 }

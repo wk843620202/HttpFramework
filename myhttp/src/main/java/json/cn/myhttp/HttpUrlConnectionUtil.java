@@ -3,7 +3,6 @@ package json.cn.myhttp;
 import android.webkit.URLUtil;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -38,14 +37,16 @@ public class HttpUrlConnectionUtil {
      */
     private static HttpURLConnection get(Request request) throws AppException {
 
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         try {
+            request.checkIfCancelled();
             connection = (HttpURLConnection) new URL(request.url).openConnection();
             connection.setConnectTimeout(15 * 1000);
             connection.setRequestMethod(request.method.name());
             connection.setReadTimeout(15 * 1000);
 
             addHeaders(connection, request.headers);
+            request.checkIfCancelled();
 
         } catch (SocketTimeoutException e) {
             //网络请求超时
@@ -64,8 +65,9 @@ public class HttpUrlConnectionUtil {
      * @throws Exception
      */
     private static HttpURLConnection post(Request request) throws AppException {
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         try {
+            request.checkIfCancelled();
             connection = (HttpURLConnection) new URL(request.url).openConnection();
             connection.setConnectTimeout(15 * 1000);
             connection.setRequestMethod(request.method.name());
@@ -73,10 +75,11 @@ public class HttpUrlConnectionUtil {
             connection.setDoOutput(true);
 
             addHeaders(connection,request.headers);
-
+            request.checkIfCancelled();
             // 写入请求参数
             OutputStream os =  connection.getOutputStream();
             os.write(request.content.getBytes());
+            request.checkIfCancelled();
         }catch (SocketTimeoutException e) {
             //网络请求超时
             throw new AppException(AppException.ErrorType.TIMEOUT, e.getMessage());

@@ -18,6 +18,11 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
     }
 
     @Override
+    protected void onCancelled() {
+        super.onCancelled();
+    }
+
+    @Override
     protected void onPreExecute() {
         super.onPreExecute();
     }
@@ -29,6 +34,9 @@ public class RequestTask extends AsyncTask<Void,Integer,Object> {
 
     private Object request(int retryCount){
         try {
+
+            super.isCancelled();
+
             HttpURLConnection connection = HttpUrlConnectionUtil.execute(request);
             if(request.enableProgressUpdate){
                 return request.mICallBack.parse(connection, new OnProgressUpdatedListener() {
